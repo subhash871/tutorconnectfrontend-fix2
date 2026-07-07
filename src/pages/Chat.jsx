@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Loader from '../components/Loader';
 import EmptyState from '../components/EmptyState';
+import VideoCall from '../components/VideoCall';
+import { useCall } from '../hooks/useCall';
 
 export default function Chat() {
   const { user } = useAuth();
@@ -76,6 +78,8 @@ export default function Chat() {
   const activeConversation = conversations.find((c) => c.id === activeId);
   const otherParticipant = activeConversation?.participants?.find((p) => p.id !== user?.id);
 
+  const { callState, localStream, remoteStream, startCall, endCall } = useCall(activeId);
+
   return (
     <div className="page-shell">
       <div className="container">
@@ -114,6 +118,10 @@ export default function Chat() {
               <>
                 <div className="chat-header">
                   <strong>{otherParticipant?.full_name || otherParticipant?.username}</strong>
+                  <div className="chat-call-actions">
+                    <button className="btn btn-ghost btn-sm" onClick={() => startCall(false)}>🎤 Call</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => startCall(true)}>📹 Video</button>
+                  </div>
                 </div>
                 <div className="chat-messages" ref={scrollRef}>
                   {loadingMessages ? <Loader label="Loading messages…" /> : messages.map((m) => (
@@ -133,6 +141,13 @@ export default function Chat() {
           </div>
         </div>
       </div>
+
+      <VideoCall
+        callState={callState}
+        localStream={localStream}
+        remoteStream={remoteStream}
+        onEndCall={endCall}
+      />
     </div>
   );
 }

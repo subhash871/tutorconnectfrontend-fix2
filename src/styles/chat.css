@@ -38,7 +38,13 @@
 }
 
 .chat-main { display: flex; flex-direction: column; height: 100%; }
-.chat-header { padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
 .chat-bubble {
   max-width: 70%;
@@ -59,4 +65,45 @@
 }
 .chat-input-row input {
   flex: 1; padding: 11px 14px; border-radius: 999px; border: 1.5px solid var(--line); font-size: 0.9rem;
+}
+
+.chat-call-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Video/voice call overlay */
+.video-call-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-call-remote {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.video-remote {
+  max-width: 100%;
+  max-height: 100%;
+}
+.video-local {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 160px;
+  border-radius: 8px;
+  border: 2px solid #fff;
+}
+.call-end-btn {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
 }
