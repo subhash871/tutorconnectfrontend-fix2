@@ -1,0 +1,48 @@
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+}
+.filter-tabs button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--slate);
+}
+.filter-tabs button.active { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+
+.booking-list { display: flex; flex-direction: column; gap: 14px; }
+.booking-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr auto;
+  gap: 16px;
+  align-items: center;
+}
+@media (max-width: 800px) { .booking-row { grid-template-columns: 1fr; } }
+.booking-row-main { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.booking-row-main h3 { font-size: 1rem; margin: 4px 0 2px; }
+.booking-row-details { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--slate); }
+.paid-tag { color: var(--sage); font-style: normal; font-weight: 700; margin-left: 6px; }
+.booking-row-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 800px) { .booking-row-actions { justify-content: flex-start; } }
+
+.payment-method-grid { display: flex; gap: 10px; }
+.payment-method-btn {
+  flex: 1;
+  padding: 14px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line);
+  background: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--slate);
+}
+.payment-method-btn.active { border-color: var(--marigold); background: var(--amber-light); color: var(--marigold-dark); }
+
+.wishlist-item { display: flex; flex-direction: column; gap: 10px; }

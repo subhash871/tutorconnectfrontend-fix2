@@ -1,0 +1,129 @@
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 72px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+.brand-mark {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: var(--indigo);
+  color: var(--marigold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.brand-word { color: var(--indigo-dark); font-family: var(--font-display); }
+.brand-word em { color: var(--marigold-dark); font-style: normal; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--slate);
+}
+.nav-links a { padding: 6px 0; border-bottom: 2px solid transparent; transition: color 0.12s, border-color 0.12s; }
+.nav-links a:hover { color: var(--indigo); }
+.nav-links a.active { color: var(--indigo-dark); border-color: var(--marigold); }
+
+.navbar-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.hamburger { display: none; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: 6px; }
+.hamburger span { width: 20px; height: 2px; background: var(--indigo-dark); border-radius: 2px; }
+
+.user-menu { position: relative; }
+.user-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff; border: 1.5px solid var(--line);
+  border-radius: 999px; padding: 6px 14px 6px 6px;
+  font-weight: 700; font-size: 0.85rem; color: var(--ink);
+  cursor: pointer;
+}
+.avatar-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--marigold); color: #21160a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem; font-weight: 800;
+}
+.user-dropdown {
+  display: none;
+  position: absolute; right: 0; top: calc(100% + 8px);
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  min-width: 190px; overflow: hidden; z-index: 50;
+}
+.user-menu:hover .user-dropdown,
+.user-menu:focus-within .user-dropdown { display: block; }
+.user-dropdown a, .user-dropdown button {
+  display: block; width: 100%; text-align: left;
+  padding: 11px 16px; font-size: 0.87rem; font-weight: 600;
+  background: none; border: none; cursor: pointer; color: var(--ink);
+}
+.user-dropdown a:hover, .user-dropdown button:hover { background: var(--amber-light); }
+
+@media (max-width: 920px) {
+  .nav-links {
+    display: none;
+    position: absolute; top: 72px; left: 0; right: 0;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 24px 16px;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { width: 100%; padding: 12px 0; }
+  .hamburger { display: flex; }
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: 80px;
+  border-top: 1px solid var(--line);
+  background: var(--indigo-dark);
+  color: #cfd6e8;
+  padding: 52px 0 20px;
+}
+.site-footer h4 { color: #fff; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 14px; }
+.site-footer .text-muted { color: #9aa5c4; }
+.footer-inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 32px;
+  padding-bottom: 32px;
+}
+.footer-brand .brand-word { color: #fff; }
+.footer-col { display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem; }
+.footer-col a { color: #cfd6e8; }
+.footer-col a:hover { color: var(--marigold); }
+.footer-legal { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 18px; }
+@media (max-width: 700px) { .footer-inner { grid-template-columns: 1fr; } }
+
+.page-shell { flex: 1; padding: 40px 0 80px; }
+.page-header { margin-bottom: 32px; }
+.page-header .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--marigold-dark);
+  display: block;
+  margin-bottom: 8px;
+}

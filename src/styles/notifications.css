@@ -1,0 +1,20 @@
+.notification-list { display: flex; flex-direction: column; gap: 10px; }
+.notification-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid var(--line);
+  cursor: pointer;
+}
+.notification-item.unread { background: var(--amber-light); border-color: #EFCF9C; }
+.notification-item strong { display: block; margin-bottom: 2px; font-size: 0.95rem; color: var(--indigo-dark); }
+.notification-item p { margin-bottom: 4px; }
+.notification-dot {
+  width: 9px; height: 9px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;
+  background: var(--line);
+}
+.notification-item.unread .notification-dot { background: var(--marigold); }
