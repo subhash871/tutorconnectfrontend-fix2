@@ -30,11 +30,7 @@ export default function Register() {
     try {
       const body = await register(form);
       showToast('Account created! Please verify your email.', 'success');
-      if (body?.tokens) {
-        navigate('/verify-email', { state: { email: form.email } });
-      } else {
-        navigate('/login');
-      }
+      navigate('/verify-email', { state: { email: form.email } });
     } catch (err) {
       setError(extractErrorMessage(err));
     } finally {

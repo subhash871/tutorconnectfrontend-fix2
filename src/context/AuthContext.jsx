@@ -55,11 +55,8 @@ export function AuthProvider({ children }) {
   const register = async (payload) => {
     const { data } = await authApi.register(payload);
     const body = data?.data ?? data;
-    if (body?.tokens) {
-      tokenStore.setTokens(body.tokens.access, body.tokens.refresh);
-      setUser(body.user);
-      setSessionIssue(null);
-    }
+    // No tokens are issued at registration anymore — user must verify
+    // their email with the OTP before they can log in.
     return body;
   };
 
