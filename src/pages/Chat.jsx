@@ -78,7 +78,7 @@ export default function Chat() {
   const activeConversation = conversations.find((c) => c.id === activeId);
   const otherParticipant = activeConversation?.participants?.find((p) => p.id !== user?.id);
 
-  const { callState, localStream, remoteStream, startCall, endCall } = useCall(activeId);
+  const { callState, localStream, remoteStream, incomingCall, startCall, acceptCall, declineCall, endCall } = useCall(activeId);
 
   return (
     <div className="page-shell">
@@ -142,8 +142,19 @@ export default function Chat() {
         </div>
       </div>
 
+      {incomingCall && callState === 'ringing' && (
+        <div className="incoming-call-banner">
+          <p>📞 Incoming call from {otherParticipant?.first_name || 'the other participant'}…</p>
+          <div className="incoming-call-actions">
+            <button className="btn btn-success btn-sm" onClick={() => acceptCall(true)}>Accept (Video)</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => acceptCall(false)}>Accept (Audio)</button>
+            <button className="btn btn-danger btn-sm" onClick={declineCall}>Decline</button>
+          </div>
+        </div>
+      )}
+
       <VideoCall
-        callState={callState}
+        callState={incomingCall ? 'idle' : callState}
         localStream={localStream}
         remoteStream={remoteStream}
         onEndCall={endCall}

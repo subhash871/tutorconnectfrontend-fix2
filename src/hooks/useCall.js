@@ -22,9 +22,11 @@ export function useCall(conversationId) {
   const [callState, setCallState] = useState('idle'); // idle | calling | ringing | connected
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
+  const [incomingCall, setIncomingCall] = useState(null); // { offer } | null
 
   const wsRef = useRef(null);
   const pcRef = useRef(null);
+  const pendingOfferRef = useRef(null);
 
   const connectSocket = useCallback(() => {
     if (wsRef.current) return wsRef.current;
@@ -34,10 +36,10 @@ export function useCall(conversationId) {
 
     ws.onmessage = async (e) => {
       const data = JSON.parse(e.data);
-      if (data.type === 'call_offer') await handleOffer(data.payload);
+      if (data.type === 'call_offer') handleIncomingOffer(data.payload);
       else if (data.type === 'call_answer') await handleAnswer(data.payload);
       else if (data.type === 'ice_candidate') await handleIce(data.payload);
-      else if (data.type === 'call_end') endCall();
+      else if (data.type === 'call_end') resetCallState();
     };
     wsRef.current = ws;
     return ws;
@@ -86,9 +88,20 @@ export function useCall(conversationId) {
     setCallState('calling');
   };
 
-  const handleOffer = async (offer) => {
+  const handleIncomingOffer = (offer) => {
+    // Don't interrupt a call already in progress
+    if (callState !== 'idle') return;
+    pendingOfferRef.current = offer;
+    setIncomingCall({ offer });
     setCallState('ringing');
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+  };
+
+  const acceptCall = async (video = true) => {
+    const offer = pendingOfferRef.current;
+    if (!offer) return;
+    setIncomingCall(null);
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video });
     setLocalStream(stream);
     const pc = createPeerConnection();
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
@@ -98,6 +111,14 @@ export function useCall(conversationId) {
     await pc.setLocalDescription(answer);
     send('call_answer', answer);
     setCallState('connected');
+    pendingOfferRef.current = null;
+  };
+
+  const declineCall = () => {
+    send('call_end', {});
+    pendingOfferRef.current = null;
+    setIncomingCall(null);
+    setCallState('idle');
   };
 
   const handleAnswer = async (answer) => {
@@ -113,15 +134,32 @@ export function useCall(conversationId) {
     }
   };
 
-  const endCall = () => {
-    send('call_end', {});
+  const resetCallState = () => {
     pcRef.current?.close();
     pcRef.current = null;
-    localStream?.getTracks().forEach((t) => t.stop());
-    setLocalStream(null);
+    pendingOfferRef.current = null;
+    setLocalStream((prev) => {
+      prev?.getTracks().forEach((t) => t.stop());
+      return null;
+    });
     setRemoteStream(null);
+    setIncomingCall(null);
     setCallState('idle');
   };
 
-  return { callState, localStream, remoteStream, startCall, endCall };
+  const endCall = () => {
+    send('call_end', {});
+    resetCallState();
+  };
+
+  return {
+    callState,
+    localStream,
+    remoteStream,
+    incomingCall,
+    startCall,
+    acceptCall,
+    declineCall,
+    endCall,
+  };
 }
