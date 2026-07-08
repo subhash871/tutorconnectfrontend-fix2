@@ -1,7 +1,22 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_BASE_URL, tokenStore } from '../api/client';
 
-const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  // Free public TURN server (Open Relay Project) — needed as a fallback
+  // because STUN alone frequently fails to connect two peers that are
+  // behind different NATs/firewalls (a very common real-world case).
+  {
+    urls: 'turn:openrelay.metered.ca:80',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  {
+    urls: 'turn:openrelay.metered.ca:443',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+];
 
 export function useCall(conversationId) {
   const [callState, setCallState] = useState('idle'); // idle | calling | ringing | connected
@@ -31,6 +46,18 @@ export function useCall(conversationId) {
   const send = (type, payload) => {
     wsRef.current?.send(JSON.stringify({ type, payload }));
   };
+
+  // Always listen for incoming call signals while this conversation is
+  // open, not only when the user themselves initiates a call — otherwise
+  // the receiving side never hears the incoming call_offer at all.
+  useEffect(() => {
+    if (!conversationId) return undefined;
+    connectSocket();
+    return () => {
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [conversationId, connectSocket]);
 
   const createPeerConnection = () => {
     const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
