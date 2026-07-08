@@ -27,6 +27,7 @@ export function useCall(conversationId) {
   const wsRef = useRef(null);
   const pcRef = useRef(null);
   const pendingOfferRef = useRef(null);
+  const pendingCandidatesRef = useRef([]);
 
   const connectSocket = useCallback(() => {
     if (wsRef.current) return wsRef.current;
@@ -107,6 +108,7 @@ export function useCall(conversationId) {
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
     await pc.setRemoteDescription(offer);
+    await flushPendingCandidates();
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     send('call_answer', answer);
@@ -123,14 +125,38 @@ export function useCall(conversationId) {
 
   const handleAnswer = async (answer) => {
     await pcRef.current?.setRemoteDescription(answer);
+    await flushPendingCandidates();
     setCallState('connected');
   };
 
   const handleIce = async (candidate) => {
+    const pc = pcRef.current;
+    // If the peer connection doesn't exist yet (receiver hasn't accepted),
+    // or the remote description isn't set yet, buffer this candidate
+    // instead of silently dropping it — otherwise media can end up
+    // flowing in only one direction once the call finally connects.
+    if (!pc || !pc.remoteDescription || !pc.remoteDescription.type) {
+      pendingCandidatesRef.current.push(candidate);
+      return;
+    }
     try {
-      await pcRef.current?.addIceCandidate(candidate);
+      await pc.addIceCandidate(candidate);
     } catch (err) {
       console.error('ICE add error', err);
+    }
+  };
+
+  const flushPendingCandidates = async () => {
+    const pc = pcRef.current;
+    if (!pc) return;
+    const queued = pendingCandidatesRef.current;
+    pendingCandidatesRef.current = [];
+    for (const candidate of queued) {
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        console.error('ICE add error (flush)', err);
+      }
     }
   };
 
@@ -138,6 +164,7 @@ export function useCall(conversationId) {
     pcRef.current?.close();
     pcRef.current = null;
     pendingOfferRef.current = null;
+    pendingCandidatesRef.current = [];
     setLocalStream((prev) => {
       prev?.getTracks().forEach((t) => t.stop());
       return null;
